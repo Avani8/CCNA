@@ -1,0 +1,303 @@
+ICND1 IPv4 Address Allocation Exercise
+You are a network technician at Acme, Inc.
+Make sure you are familiar with the topology of Acme's network.
+Acme has recently opened a third office in a foreign country and bought a router to connect this office to the other two already on the network.
+The names of the routers are Acme1, Acme2, and Acme3.
+Your job is to configure Acme3's IPv4 addresses on the Loopback0, Fa0/0 and S0/1 interfaces so that:
+All addresses are taken from the 192.168.101.0 network and use a 28 bit mask
+The Loopback0 interface is given the last valid IP address of the zero subnet
+The Fa0/0 interface is given the first valid IP address of the the next subnet
+The S0/1 interface is given the first valid IP address of the last subnet.
+All interfaces participate in the OSPFv2 routing process
+The routers have been configured with the following specifications.
+The routers are named Acme1, Acme2, and Acme3.
+All interfaces are in OSPF area 0
+Clocking is provided on the serial 0/0 interfaces
+The secret password on the Acme3 router is "Acme"
+The subnet mask of all networks other than 192.168.101.0 is the default mask.
+The IP addresses are listed in the chart below.
+Acme1
+Fa0/0: 192.168.93.1
+S0/0: 192.168.95.1
+Acme2
+Fa0/0: 192.168.97.1
+S0/0: 192.168.101.42
+S0/1: 192.168.95.2
+Acme3
+Fa0/0: To be determined
+S0/1: To be determined
+When you have finished, test your configuration by loading the check-answer.vpc script file from the Virtual PC Simulator using the command:
+**courtsey-woskstationlabs lab3**
+----------------------------------------------------------------------------------------------------------------------------------------
+
+Acme3#sh run
+Building configuration...
+
+Current configuration : 1040 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme3
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 192.168.101.14 255.255.255.240
+!
+interface FastEthernet0/0
+ ip address 192.168.101.17 255.255.255.240
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ ip address 192.168.101.241 255.255.255.240
+ clock rate 2000000
+!
+router ospf 1
+ log-adjacency-changes
+ network 192.168.101.14 0.0.0.0 area 0
+ network 192.168.101.17 0.0.0.0 area 0
+ network 192.168.101.241 0.0.0.0 area 0
+!
+ip classless
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+Acme1#sh run
+Building configuration...
+
+Current configuration : 1008 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 192.168.94.1 255.255.255.0
+!
+interface FastEthernet0/0
+ ip address 192.168.93.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 192.168.95.1 255.255.255.0
+ clock rate 64000
+!
+interface FastEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+router ospf 1
+ log-adjacency-changes
+ network 192.168.93.1 0.0.0.0 area 0
+ network 192.168.94.1 0.0.0.0 area 0
+ network 192.168.95.1 0.0.0.0 area 0
+!
+ip classless
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+----------------------------------------------------------------------------------------------------------------------------
+Acme2#sh run
+Building configuration...
+
+Current configuration : 1092 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme2
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 192.168.96.1 255.255.255.0
+!
+interface FastEthernet0/0
+ ip address 192.168.97.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 192.168.101.242 255.255.255.240
+ no fair-queue
+ clock rate 64000
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ ip address 192.168.95.2 255.255.255.0
+ clock rate 2000000
+!
+router ospf 2
+ log-adjacency-changes
+ network 192.168.95.2 0.0.0.0 area 0
+ network 192.168.96.1 0.0.0.0 area 0
+ network 192.168.97.1 0.0.0.0 area 0
+ network 192.168.101.242 0.0.0.0 area 0
+!
+ip classless
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+
