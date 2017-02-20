@@ -1,0 +1,431 @@
+
+Acme1#sh run
+Building configuration...
+
+Current configuration : 1775 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$k3x2$7EQbYgOaRA1OjwBFYqKFa1
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+ip dhcp excluded-address 172.16.1.1 172.16.1.10
+ip dhcp excluded-address 172.16.2.1 172.16.2.20
+!
+ip dhcp pool Acme1
+   network 172.16.1.0 255.255.255.0
+   domain-name acme.com
+   dns-server 192.0.2.1
+   default-router 172.16.1.1
+   lease 0 12
+!
+ip dhcp pool Acme2
+   network 172.16.2.0 255.255.255.0
+   domain-name acme.com
+   dns-server 192.0.2.1
+   default-router 172.16.2.1
+   lease 0 12
+!
+!
+ip name-server 192.0.2.1
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.1.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.0.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+router ospf 1
+ router-id 172.16.0.1
+ log-adjacency-changes
+ passive-interface default
+ no passive-interface FastEthernet0/1
+ network 0.0.0.0 255.255.255.255 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner motd ^C
+***************************************
+               Acme1
+    UNAUTHORISED ACCESS PROHIBITED
+
+Password is Acme
+
+***************************************
+^C
+!
+line con 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line aux 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line vty 0 4
+ password Acme
+ login
+line vty 5 15
+ password Acme
+ login
+!
+!
+end
+------------------------------------------------------------------------------------------------------------
+
+Acme2#sh run
+Building configuration...
+
+Current configuration : 1583 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme2
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$ZA31$CvldBwlvR0zpAUzxFyhhd1
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+ip domain name acme.com
+ip name-server 192.0.2.1
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.2.1 255.255.255.0
+ ip helper-address 172.168.0.1
+ ip helper-address 172.16.0.1
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.0.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ ip address 192.0.2.2 255.255.255.0
+ duplex auto
+ speed auto
+!
+router ospf 1
+ router-id 172.16.0.2
+ log-adjacency-changes
+ redistribute static
+ passive-interface default
+ no passive-interface FastEthernet0/1
+ no passive-interface FastEthernet1/0
+ network 0.0.0.0 255.255.255.255 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner motd ^C
+***************************************
+               Acme2
+    UNAUTHORISED ACCESS PROHIBITED
+
+Password is Acme
+
+***************************************
+^C
+!
+line con 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line aux 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line vty 0 4
+ password Acme
+ login
+line vty 5 15
+ password Acme
+ login
+!
+!
+end
+-----------------------------------------------------------------------------------------------------------------------------
+DNS#sh run
+Building configuration...
+
+Current configuration : 1804 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname DNS
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$nCBq$evwS4LzNAiTrUQHw67/xA.
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip domain name acme.com
+ip host ns1 200.0.0.1 192.0.2.1
+ip host ns1.acme.com 200.0.0.1 192.0.2.1
+ip host www.acme.com 200.0.0.2
+ip host mail.acme.com 200.0.0.3
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username Acem password 0 Acme
+username Acme privilege 15 secret 5 $1$EBMF$2vIOy9314rTMiuvMq/IQn1
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Loopback0
+ ip address 200.0.0.2 255.255.255.255 secondary
+ ip address 200.0.0.3 255.255.255.255 secondary
+ ip address 200.0.0.1 255.255.255.255
+!
+interface FastEthernet0/0
+ ip address 192.0.2.1 255.255.255.0
+ speed 100
+ full-duplex
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router ospf 1
+ router-id 192.0.2.1
+ log-adjacency-changes
+ redistribute static metric 1
+ passive-interface default
+ no passive-interface FastEthernet0/0
+ network 192.0.2.1 0.0.0.0 area 0
+!
+ip forward-protocol nd
+ip route 200.0.0.0 255.0.0.0 Null0
+!
+!
+no ip http server
+no ip http secure-server
+ip dns server
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner motd ^C
+***************************************
+               ns1.acme.com
+    UNAUTHORISED ACCESS PROHIBITED
+
+You do not need to access this router
+
+***************************************
+^C
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ login local
+line aux 0
+ exec-timeout 0 0
+ logging synchronous
+ login local
+line vty 0 4
+ login local
+line vty 5 15
+ login local
+!
+!
+end
+
