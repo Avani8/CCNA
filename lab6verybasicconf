@@ -1,0 +1,268 @@
+ICND1 IPv4 Address Assignment Exercise
+You work as a network administrator at Acme.
+Restoring Snapshot 0 (ICND1 IPv4 Address Assignment Exercise) from File | Manage snapshots will load a set of prepared configurations into the devices shown in this topology. 
+You are required to configure the router named Acme1.
+The routers have the following configuration specifications:
+• They are named Acme1 and Acme2
+• The password on both routers is Acme
+• They have the following IP addresses
+Acme1
+Fa0/0: 10.0.239.155
+Acme2
+No IP address specifications.
+ 
+Your task is to configure the Fa0/0 interface on the Acme1 router.
+You must use the IP address 10.0.239.155 and the default subnet mask.
+ 
+When you have finished, test your configuration by pinging PC2 (192.168.0.220) from PC1 from the Virtual PC Simulator using the command:
+ping 192.168.0.222
+
+--------------------------------------------------------------------------------------------------------------------------
+Acme1(config)#do sh run
+Building configuration...
+
+Current configuration : 863 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.0.239.155 255.0.0.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 192.168.95.1 255.255.255.252
+ shutdown
+ clock rate 64000
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip classless
+ip route 192.168.0.0 255.255.255.0 192.168.95.2
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+
+Acme1(config)#do sh run
+Building configuration...
+
+Current configuration : 863 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.0.239.155 255.0.0.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 192.168.95.1 255.255.255.252
+ shutdown
+ clock rate 64000
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip classless
+ip route 192.168.0.0 255.255.255.0 192.168.95.2
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+Acme2#sh run
+Building configuration...
+
+Current configuration : 851 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme2
+!
+boot-start-marker
+boot-end-marker
+!
+enable password Acme
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 192.168.0.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 192.168.95.2 255.255.255.252
+ clock rate 2000000
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip classless
+ip route 10.0.0.0 255.0.0.0 192.168.95.1
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ password Acme
+ login
+line aux 0
+line vty 0 4
+ login
+!
+!
+end
+
