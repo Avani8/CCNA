@@ -1,0 +1,199 @@
+ICND1 IPv4 DHCP & NAPT Exercise
+Restoring Snapshot 0 (ICND1 IPv4 DHCP & NAPT Exercise) from File | Manage snapshots will load a set of blank configurations into the R1 router shownn in this topology.
+Acme.com has deployed a router named R1 at their Mt Hagan office. Your job is to configure the router R1 so that the office is able to get internet connectivity via the serial connection to the local service provider.
+You are to configure the following:
+User: Acme 
+Acme's secret password: Acme123 
+Console access is to have local authenticaton 
+Enable secret password: Acme123 
+Hostname: Acme1 
+IP address 10.0.1.1/24 on the Fa 0/1 interface 
+Enable DHCP for hosts on the Fa 0/1 interface 
+Use a DNS Server of 200.1.95.1 for DHCP clients 
+Use acme.com as the domain name 
+Use 10.0.1.1 as the default router 
+IP address 200.1.95.2/24 on the Serial 0/0 interface 
+Default route to 200.1.95.1 
+Enable NAPT so users on the Fa 0/1 interface can reach the internet via the Serial 0/0 interface 
+Save your configuration 
+Test your security configuration exiting the console session and logging in as user Acme
+Test your IP, DHCP and NAT configuration by having VPCS PC1 and PC2:
+obtain ip addresses via dhcp; 
+ping 200.1.0.2 
+ping 200.1.0.2 -p 80 -3 
+ping pc3 -2 
+When you have finished, test your configuration by loading the check-answer.vpc script file from the Virtual PC Simulator using the command:
+load check-answer.vpc
+[Click Tools | VPCS multi-host to access the Virtual PC Simulator]
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Acme1#sh run
+Building configuration...
+
+Current configuration : 2138 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 51200 warnings
+enable secret 5 $1$rI9W$Lz4/kJ9xhGJb2wMorOM3d0
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool POOL_10.0.1.0/24
+   network 10.0.1.0 255.255.255.0
+   default-router 10.0.1.1
+   dns-server 200.1.95.1
+   domain-name acme.com
+!
+!
+ip domain name acme.com
+ip name-server 200.1.95.1
+!
+!
+!
+crypto pki trustpoint TP-self-signed-4279256517
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4279256517
+ revocation-check none
+ rsakeypair TP-self-signed-4279256517
+!
+!
+
+Acme1#sh run
+Building configuration...
+
+Current configuration : 2138 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Acme1
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 51200 warnings
+enable secret 5 $1$rI9W$Lz4/kJ9xhGJb2wMorOM3d0
+!
+no aaa new-model
+!
+resource policy
+!
+memory-size iomem 5
+ip subnet-zero
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool POOL_10.0.1.0/24
+   network 10.0.1.0 255.255.255.0
+   default-router 10.0.1.1
+   dns-server 200.1.95.1
+   domain-name acme.com
+!
+!
+ip domain name acme.com
+ip name-server 200.1.95.1
+!
+!
+!
+crypto pki trustpoint TP-self-signed-4279256517
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4279256517
+ revocation-check none
+ rsakeypair TP-self-signed-4279256517
+!
+!
+username Acme secret 5 $1$uZMD$tZgnlurdHa.tTzaZQjd8O.
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/0
+ ip address 200.1.95.2 255.255.255.0
+ ip nat outside
+ ip virtual-reassembly
+ clock rate 2000000
+!
+interface FastEthernet0/1
+ ip address 10.0.1.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly
+ duplex auto
+ speed auto
+!
+interface Serial0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 200.1.95.1
+!
+ip http server
+ip http access-class 23
+ip http authentication local
+ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000
+ip nat inside source list 1 interface Serial0/0 overload
+!
+access-list 1 permit 10.0.1.0 0.0.0.255
+!
+!
+control-plane
+!
+!
+banner exec ^Cc
+-----------------------------------------------------------------------
+Acme1 Router: Unauthorised Access Prohibited
+-----------------------------------------------------------------------
+^C
+banner login ^Cc
+-----------------------------------------------------------------------
+Acme1 Router: Unauthorised Access Prohibited
+-----------------------------------------------------------------------
+^C
+!
+line con 0
+ login local
+line aux 0
+line vty 0 4
+ login local
+ transport input telnet ssh
+line vty 5 15
+ login local
+ transport input telnet ssh
+!
+!
+end
