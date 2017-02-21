@@ -1,0 +1,204 @@
+This is summary of most frequent commands 
+
+***DHCP***
+create pool and assing intereface for default route
+**********
+ip dhcp pool inside
+   network 192.168.1.0 255.255.255.0
+   default-router 192.168.1.1
+!
+ip dhcp pool outside
+   network 192.168.2.0 255.255.255.0
+   default-router 192.168.2.1
+!
+
+interface FastEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 192.168.2.1 255.255.255.0
+ ip helper-address 192.168.2.1
+ duplex auto
+ speed auto
+!
+
+********************************************************************************
+                         DHCP to other routers -with excludes 
+********************************************************************************
+
+ip dhcp excluded-address 172.16.1.1 172.16.1.10
+ip dhcp excluded-address 172.16.2.1 172.16.2.20
+!
+ip dhcp pool Acme1
+   network 172.16.1.0 255.255.255.0
+   domain-name acme.com
+   dns-server 192.0.2.1
+   default-router 172.16.1.1
+   lease 0 12
+!
+ip dhcp pool Acme2
+   network 172.16.2.0 255.255.255.0
+   domain-name acme.com
+   dns-server 192.0.2.1
+   default-router 172.16.2.1
+   lease 0 12
+!
+
+****Assign Interfaces for default router on dhcp server router ****
+interface FastEthernet0/0
+ ip address 172.16.1.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.0.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+
+********************************************************************************
+                           Dhcp helper for dhcp client router 
+********************************************************************************
+
+
+interface FastEthernet0/0
+ ip address 172.16.2.1 255.255.255.0
+ ip helper-address 172.168.0.1
+ ip helper-address 172.16.0.1
+ duplex auto
+ speed auto
+!
+
+interface FastEthernet0/1
+ ip address 172.16.0.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+
+********************************************************************************
+                                        DNS setup
+********************************************************************************
+ip domain name acme.com
+ip host ns1 200.0.0.1 192.0.2.1
+ip host ns1.acme.com 200.0.0.1 192.0.2.1
+ip host www.acme.com 200.0.0.2
+ip host mail.acme.com 200.0.0.3
+!
+
+*****Don't forget to apply routing on both routers(statics /EIGRP/OSPF etc)*****
+
+********************************************************************************
+                 OSPF  and passive interface to reduce broadcast
+********************************************************************************
+
+router ospf 1
+ router-id 172.16.0.2
+ log-adjacency-changes
+ redistribute static
+ passive-interface default
+ no passive-interface FastEthernet0/1
+ no passive-interface FastEthernet1/0
+ network 0.0.0.0 255.255.255.255 area 0
+!
+
+
+
+********************************************************************************
+                            Create Redundancy 
+********************************************************************************
+
+interface Loopback0
+ ip address 200.0.0.2 255.255.255.255 secondary
+ ip address 200.0.0.3 255.255.255.255 secondary
+ ip address 200.0.0.1 255.255.255.255
+!
+
+
+
+********************************************************************************
+                            Create Banner 
+********************************************************************************
+
+banner motd ^C
+***************************************
+               Acme1
+    UNAUTHORISED ACCESS PROHIBITED
+
+Password is Acme
+
+***************************************
+^C
+!
+
+
+********************************************************************************
+                            Login (console, Aux, Telnet)
+********************************************************************************
+line con 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line aux 0
+ exec-timeout 0 0
+ password Acme
+ logging synchronous
+ login
+line vty 0 4
+ password Acme
+ login
+line vty 5 15
+ password Acme
+ login
+ 
+*********************************************************************************
+                           Username -password
+*********************************************************************************
+user Acme
+en password Acme1
+en secret level 5 Acme1
+
+
+ 
+*********************************************************************************
+                          vlan
+*********************************************************************************
+vlan number or on gns3 vlan database
+vlan 10 
+vlan 20 
+vlan 30 
+exit
+
+
+interface FastEthernet1/0.1
+ encapsulation dot1Q 1 native
+ ip address 172.16.1.1 255.255.255.0
+!
+interface FastEthernet1/0.10
+ encapsulation dot1Q 10
+ ip address 172.16.10.1 255.255.255.0
+!
+interface FastEthernet1/0.20
+ encapsulation dot1Q 20
+ ip address 172.16.20.1 255.255.255.0
+!
+
+interface FastEthernet1/0
+ switchport mode trunk
+!
+interface FastEthernet1/1
+ switchport mode trunk
+!
+interface FastEthernet1/2
+!
+interface FastEthernet1/3
+ switchport access vlan 20
+!
+interface FastEthernet1/4
+ switchport access vlan 20
+!
+
+
+
